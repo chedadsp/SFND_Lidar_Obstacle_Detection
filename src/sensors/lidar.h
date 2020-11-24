@@ -87,12 +87,12 @@ struct Lidar
 	{
 		minDistance = 5;
 		maxDistance = 50;
-		resoultion = 0.2;
+		resoultion = 0.02;
 		sderr = 0.2;
 		cars = setCars;
 		groundSlope = setGroundSlope;
 
-		int numLayers = 8;
+		int numLayers = 64;
 		// the steepest vertical angle
 		double steepestAngle =  30.0*(-pi/180);
 		double angleRange = 26.0*(pi/180);
