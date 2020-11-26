@@ -135,7 +135,7 @@ int main ()
 	if(inliers.size())
 	{
 		renderPointCloud(viewer,cloudInliers,"inliers",Color(0,1,0));
-  		renderPointCloud(viewer,cloudOutliers,"outliers",Color(1,0,0));
+  		renderPointCloud(viewer,cloudOutliers,"outliers",Color(0,0,1));
 	}
   	else
   	{
