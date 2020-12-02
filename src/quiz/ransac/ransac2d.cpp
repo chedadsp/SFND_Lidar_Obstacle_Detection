@@ -68,8 +68,7 @@ std::unordered_set<int> Ransac(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int ma
 
 	const int cloud_size = cloud->points.size();
 	
-	// For max iterations
-	for(int i = 0; i < maxIterations; i++)
+	while(maxIterations--)
 	{
 		std::unordered_set<int> inliers;
 		
@@ -103,7 +102,54 @@ std::unordered_set<int> Ransac(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int ma
 			inliersResult = inliers; // New max
 	}
 
-	// Return indicies of inliers from fitted line with most inliers
+	// Returns indicies of inliers from fitted line with most inliers
+	return inliersResult;
+}
+
+std::unordered_set<int> RansacPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int maxIterations, float distanceToP)
+{
+	std::unordered_set<int> inliersResult;
+	srand(time(NULL));
+
+	while(maxIterations--)
+	{
+		std::unordered_set<int> inliers;
+
+		// Randomly pick a random plane
+		while(inliers.size() < 3)
+			inliers.insert(rand()%(cloud->points.size()));
+
+		auto itr = inliers.begin();
+		float x1 = cloud->points[*itr].x;
+		float y1 = cloud->points[*itr].y;
+		float z1 = cloud->points[*itr++].z;
+		float x2 = cloud->points[*itr].x;
+		float y2 = cloud->points[*itr].y;
+		float z2 = cloud->points[*itr++].z;
+		float x3 = cloud->points[*itr].x;
+		float y3 = cloud->points[*itr].y;
+		float z3 = cloud->points[*itr++].z;
+	
+		// Equation of a Plane through Three Points
+		float a = (y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1);
+		float b = (z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1);
+		float c = (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
+		float d = - a * x1 - b * y1 - c * z1;
+
+		// Measure distance between every point and a plane
+		for(int i = 0; i < cloud->points.size(); i++)
+		{
+			// If distance is smaller than threshold count it as inlier
+			float distance = fabs(a * cloud->points[i].x + b * cloud->points[i].y + c * cloud->points[i].z + d) / sqrt (a * a + b * b + c * c);
+			if(distance < distanceToP)
+				inliers.insert(i);
+		}
+
+		if(inliers.size() > inliersResult.size())
+			inliersResult = inliers; // New max
+	}
+
+	// Returns indicies of inliers from fitted plane with most inliers
 	return inliersResult;
 }
 
@@ -114,9 +160,9 @@ int main ()
 	pcl::visualization::PCLVisualizer::Ptr viewer = initScene();
 
 	// Create data
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = CreateData();
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = CreateData3D();
 	
-	std::unordered_set<int> inliers = Ransac(cloud, 10, 1.2);
+	std::unordered_set<int> inliers = RansacPlane(cloud, 100, 0.3);
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr  cloudInliers(new pcl::PointCloud<pcl::PointXYZ>());
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloudOutliers(new pcl::PointCloud<pcl::PointXYZ>());
@@ -129,7 +175,6 @@ int main ()
 		else
 			cloudOutliers->points.push_back(point);
 	}
-
 
 	// Render 2D point cloud with inliers and outliers
 	if(inliers.size())
