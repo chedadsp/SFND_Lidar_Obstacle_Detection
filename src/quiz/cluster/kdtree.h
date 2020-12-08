@@ -53,16 +53,17 @@ struct KdTree
 		if(node != NULL)
 		{
 			// TODO: make this capable for more then 2D
-			if( (node->point[0]>=(target[0] - distanceTol) && node->point[0] <= (target[0] + distanceTol)) && 
-				(node->point[1]>=(target[1] - distanceTol) && node->point[1] <= (target[1] + distanceTol)))
+			if( (node->point[0] >= (target[0] - distanceTol) && node->point[0] <= (target[0] + distanceTol)) && 
+				(node->point[1] >= (target[1] - distanceTol) && node->point[1] <= (target[1] + distanceTol)))
 				{
 					float distance = sqrt(pow(node->point[0] - target[0] ,2) + pow(node->point[1] - target[1] ,2));
 					if(distance <= distanceTol)
 						ids.push_back(node->id);
 				}
+
 			if((target[depth % target.size()] - distanceTol) < node->point[depth % target.size()])
 				searchRecursive(target, distanceTol, node->left, depth + 1, ids);
-			if((target[depth % target.size()] - distanceTol) < node->point[depth % target.size()])
+			if((target[depth % target.size()] + distanceTol) >= node->point[depth % target.size()])
 				searchRecursive(target, distanceTol, node->right, depth + 1, ids);
 		}
 	}
