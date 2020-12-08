@@ -75,15 +75,37 @@ void render2DTree(Node* node, pcl::visualization::PCLVisualizer::Ptr& viewer, Bo
 
 }
 
+void euclideanRecursive(int i, const std::vector<std::vector<float>> points, std::vector<int>& cluster, std::vector<bool>& processed, KdTree* tree, float distanceTol)
+{
+	processed[i] = true;
+	cluster.push_back(i);
+
+	std::vector<int> naibors = tree->search(points[i], distanceTol);
+
+	for(int id : naibors)
+	{
+		if(!processed[id])
+			euclideanRecursive(id, points, cluster, processed, tree, distanceTol);
+	}
+}
+
 std::vector<std::vector<int>> euclideanCluster(const std::vector<std::vector<float>>& points, KdTree* tree, float distanceTol)
 {
 
-	// TODO: Fill out this function to return list of indices for each cluster
-
 	std::vector<std::vector<int>> clusters;
- 
-	return clusters;
+	std::vector<bool> processed(points.size(), false);
 
+	for(int i = 0; i < points.size(); i++)
+	{
+		if(!processed[i])
+		{
+			std::vector<int> cluster;
+			euclideanRecursive(i, points, cluster, processed, tree, distanceTol);
+			clusters.push_back(cluster);
+		}
+	}
+ 
+	return clusters; //return list of indices for each cluster
 }
 
 int main ()
