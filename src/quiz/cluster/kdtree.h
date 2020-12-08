@@ -25,11 +25,27 @@ struct KdTree
 	: root(NULL)
 	{}
 
+	private:
+
+	void insertRecursive(Node*& node, std::vector<float> point, int id, int depth)
+	{
+		int index = depth % point.size();
+		
+		if(node == NULL)
+			node = new Node(point, id);
+		else 
+			if(node->point[index] < point[index])
+				insertRecursive(node->right, point, id, depth + 1);
+			else
+				insertRecursive(node->left, point, id, depth + 1);
+	}
+
+	public:
+
 	void insert(std::vector<float> point, int id)
 	{
-		// TODO: Fill in this function to insert a new point into the tree
-		// the function should create a new node and place correctly with in the root 
-
+		//  create a new node and place correctly with in the root
+		insertRecursive(root, point, id, 0);
 	}
 
 	// return a list of point ids in the tree that are within distance of target
