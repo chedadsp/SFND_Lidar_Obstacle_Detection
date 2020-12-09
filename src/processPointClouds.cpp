@@ -97,7 +97,7 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
     // Time segmentation process
     auto startTime = std::chrono::steady_clock::now();
     // Find inliers for the plane
-    	std::unordered_set<int> inliersResult;
+    std::unordered_set<int> inliersResult;
 	srand(time(NULL));
 
 	while(maxIterations--)
