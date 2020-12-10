@@ -40,14 +40,6 @@ struct KdTree
 				insertRecursive(node->left, point, id, depth + 1);
 	}
 
-	public:
-
-	void insert(std::vector<float> point, int id)
-	{
-		//  create a new node and place correctly with in the root
-		insertRecursive(root, point, id, 0);
-	}
-
 	void searchRecursive(std::vector<float> target, float distanceTol, Node* node, int depth, std::vector<int>& ids)
 	{
 		if(node != NULL)
@@ -66,6 +58,14 @@ struct KdTree
 			if((target[depth % target.size()] + distanceTol) >= node->point[depth % target.size()])
 				searchRecursive(target, distanceTol, node->right, depth + 1, ids);
 		}
+	}
+
+	public:
+
+	void insert(std::vector<float> point, int id)
+	{
+		//  create a new node and place correctly with in the root
+		insertRecursive(root, point, id, 0);
 	}
 
 	// return a list of point ids in the tree that are within distance of target
