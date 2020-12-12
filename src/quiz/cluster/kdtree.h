@@ -40,13 +40,20 @@ struct KdTree
 				insertRecursive(node->left, point, id, depth + 1);
 	}
 
+	bool isWithinBox(std::vector<float>& point, std::vector<float>& target, float distanceTol)
+	{
+		bool retVal = true;
+		for(int i=0; i < point.size(); i++) // This works for KD
+			retVal = retVal && (point[i] - distanceTol) < target[i] && (point [i] + distanceTol) > target[i];
+
+		return retVal;
+	}
+	
 	void searchRecursive(std::vector<float> target, float distanceTol, Node* node, int depth, std::vector<int>& ids)
 	{
 		if(node != NULL)
 		{
-			// TODO: make this capable for more then 2D
-			if( (node->point[0] >= (target[0] - distanceTol) && node->point[0] <= (target[0] + distanceTol)) && 
-				(node->point[1] >= (target[1] - distanceTol) && node->point[1] <= (target[1] + distanceTol)))
+			if(isWithinBox(target, node->point, distanceTol))
 				{
 					float distance = sqrt(pow(node->point[0] - target[0] ,2) + pow(node->point[1] - target[1] ,2));
 					if(distance <= distanceTol)
